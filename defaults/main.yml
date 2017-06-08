@@ -1,0 +1,35 @@
+---
+
+vault_version: "0.7.2"
+vault_os: "{{ ansible_system|lower }}"
+vault_url_stub: "https://releases.hashicorp.com/vault"
+vault_download: "{{ vault_url_stub }}/{{ vault_version }}/vault_{{ vault_version }}_{{ vault_os }}_amd64.zip"
+vault_sums_download: "{{ vault_url_stub }}/{{ vault_version }}/vault_{{ vault_version}}_SHA256SUMS"
+vault_signature_download: "{{ vault_url_stub }}/{{ vault_version }}/vault_{{ vault_version}}_SHA256SUMS.sig"
+vault_bin_path: /usr/local/bin
+vault_config_path: /etc/vault.d
+vault_data_path: /var/vault
+vault_log_path: /var/log/vault
+vault_run_path: /var/run/vault
+vault_user: vault
+vault_group: bin
+vault_group_name: cluster_nodes
+vault_cluster_name: dc1
+vault_datacenter: dc1
+vault_consul: 127.0.0.1:8500
+vault_consul_path: vault
+vault_log_level: info
+vault_syslog_enable: true
+vault_iface: "{{ ansible_default_ipv4.interface }}"
+vault_address: "0.0.0.0"
+vault_redirect_addr: "{{ hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address'] }}"
+vault_port: 8200
+vault_node_name: "{{ inventory_hostname_short }}"
+vault_main_config: "{{ vault_config_path }}/vault_main.hcl"
+vault_primary_node: "{{hostvars[groups['primary'][0]]['ansible_fqdn']}}"
+vault_backend: vault_backend_consul.j2
+vault_cluster_disable: false
+vault_cluster_address: "{{ hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address'] }}"
+vault_archive: "vault_{{ vault_version }}_{{ vault_os }}_amd64.zip"
+vault_sums: "vault_{{ vault_version }}_SHA256SUMS"
+vault_signature: "vault_{{ vault_version }}_SHA256SUMS.sig"

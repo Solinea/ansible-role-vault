@@ -1,0 +1,61 @@
+---
+# File: tasks/install.yml - package installation tasks for vault
+
+- name: install the latest version of unzip
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - unzip
+    - iproute
+
+# This is needed because the base image did not have iproute installed.
+# Iproute is what Ansible uses to discover what network interfaces are
+# installed. Regathering facts after installing iproute will detect the
+# network interfaces in Ansible's fact list. These interfaces are later
+# used by vault.
+- name: Regather facts to detect network interfaces
+  setup:
+
+- name: Install zip contents
+  unarchive:
+    src: "/tmp/{{vault_archive}}"
+    dest: "{{ vault_bin_path }}"
+    remote_src: True
+
+- name: Verify executable was installed
+  stat:
+    path: "{{ vault_bin_path }}/vault"
+  register: vault_getexe
+
+- name: Enable non root mlock capability
+  command: "setcap cap_ipc_lock=+ep {{ vault_bin_path }}/vault"
+  when: vault_getexe.stat.exists
+
+- name: Create directories
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group}}"
+  with_items:
+    - "{{ vault_config_path }}"
+    - "{{ vault_data_path }}"
+    - "{{ vault_log_path }}"
+    - "{{ vault_run_path }}"
+
+- name: Listener configuration
+  template:
+    src: vault_listener.hcl.j2
+    dest: "{{ vault_main_config }}"
+    owner:  "{{ vault_user }}"
+    group:  "{{ vault_group }}"
+    mode: "0400"
+
+- name: systemd unit
+  template:
+    src: vault_systemd.service.j2
+    dest: /lib/systemd/system/vault.service
+    owner: root
+    group: root
+    mode: "0644"

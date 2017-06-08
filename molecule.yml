@@ -1,0 +1,15 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+docker:
+  containers:
+    - name: vault
+      image: centos/systemd
+      privileged: True
+      image_version: latest
+      ansible_groups:
+        - group1
+verifier:
+  name: testinfra
