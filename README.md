@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/Solinea/ansible-role-vault.svg?branch=master)](https://travis-ci.org/Solinea/ansible-role-vault)
 
 ## Purpose:
-A simple role to install vault
+A simple role to install [Hashicorp's vault](https://www.vaultproject.io/)
 
 ## Testing 
 This role is instrumented with the [`Molecule`](https://molecule.readthedocs.io/en/stable-1.25/) test harness. To run it, install `Molecule` with pip
